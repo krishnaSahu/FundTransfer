@@ -5,17 +5,20 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "customer")
 public class CustomerEntity {
 
 	@Id
-	// @GeneratedValue(strategy = GenerationType.IDENTITY)
-	// @Column(name = "c_cust_id", columnDefinition = "serial")
-	@Column(name = "c_cust_id")
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+	@Column(name = "c_cust_id", updatable = false, nullable = false)
 	private UUID customerId;
 
 	@Column(name = "a_cust_name", nullable = false)
@@ -30,7 +33,7 @@ public class CustomerEntity {
 	@Column(name = "a_cust_mobile", nullable = false)
 	private String mobileNumber;
 
-	@Column(name = "a_cust_email", nullable = true)
+	@Column(name = "a_cust_email", nullable = true, unique = true)
 	private String emailId;
 
 	@Column(name = "a_cust_creationdate", nullable = false)

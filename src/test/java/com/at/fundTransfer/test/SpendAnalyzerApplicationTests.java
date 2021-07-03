@@ -1,4 +1,4 @@
-package com.financial.spend.analyzer;
+package com.at.fundTransfer.test;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

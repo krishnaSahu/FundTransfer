@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 public class CommonResponseUtil {
 
-	public static ResponseEntity<Object> getSuccessResponse(String key, Object value, String token) {
+	public static ResponseEntity<Object> getSuccessResponse(String key, Object value) {
 
 		Map<String, Object> commonResponse = new HashMap<>();
 
