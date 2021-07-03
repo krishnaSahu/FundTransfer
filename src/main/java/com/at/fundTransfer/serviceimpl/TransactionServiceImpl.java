@@ -1,12 +1,14 @@
 package com.at.fundTransfer.serviceimpl;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.at.fundTransfer.controller.TransactionController;
@@ -18,6 +20,7 @@ import com.at.fundTransfer.entity.TransactionEntity;
 import com.at.fundTransfer.exceptions.InvalidAmountException;
 import com.at.fundTransfer.exceptions.UserNotAuthorizedException;
 import com.at.fundTransfer.service.TransactionService;
+import com.at.fundTransfer.utils.CommonResponseUtil;
 
 import ch.qos.logback.classic.Logger;
 
@@ -26,6 +29,8 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Autowired
 	private TransactionRepo transactionRepo;
+
+	@Autowired
 	private AccountRepo accountRepo;
 
 	Logger logger = (Logger) LoggerFactory.getLogger(TransactionController.class);
@@ -119,6 +124,14 @@ public class TransactionServiceImpl implements TransactionService {
 			areActive = true;
 		}
 		return areActive;
+	}
+
+	@Override
+	public ResponseEntity<Object> getTransactionSummary(Long accountId) {
+
+		List<TransactionEntity> transactionList = transactionRepo.findTransactionByAcountId(accountId);
+
+		return CommonResponseUtil.getSuccessResponse("transactionSummary", transactionList);
 	}
 
 }
