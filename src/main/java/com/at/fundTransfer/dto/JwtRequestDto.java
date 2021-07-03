@@ -1,4 +1,4 @@
-package com.at.fundTransfer.dao;
+package com.at.fundTransfer.dto;
 
 import java.io.Serializable;
 

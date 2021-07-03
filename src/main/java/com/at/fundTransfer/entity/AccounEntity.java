@@ -1,29 +1,33 @@
 package com.at.fundTransfer.entity;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 @Entity
-@Table(name = "account")
+@Table(name = "accounts")
 public class AccounEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "c_acct_id", columnDefinition = "serial")
-	private Long accountId;
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+	@Column(name = "c_acct_id", updatable = false, nullable = false)
+	private UUID accountId;
 
 	@Column(name = "a_cust_acctnum")
 	private String accountNumber;
 
 	@Column(name = "c_cust_custid")
-	private Long customerId;
+	private UUID customerId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "c_cust_custid", insertable = false, updatable = false, nullable = true)
@@ -38,11 +42,11 @@ public class AccounEntity {
 	@Column(name = "b_acco_isactive")
 	private Boolean active;
 
-	public Long getAccountId() {
+	public UUID getAccountId() {
 		return accountId;
 	}
 
-	public void setAccountId(Long accountId) {
+	public void setAccountId(UUID accountId) {
 		this.accountId = accountId;
 	}
 
@@ -54,11 +58,11 @@ public class AccounEntity {
 		this.accountNumber = accountNumber;
 	}
 
-	public Long getCustomerId() {
+	public UUID getCustomerId() {
 		return customerId;
 	}
 
-	public void setCustomerId(Long customerId) {
+	public void setCustomerId(UUID customerId) {
 		this.customerId = customerId;
 	}
 
@@ -84,6 +88,14 @@ public class AccounEntity {
 
 	public void setCustomerEntity(CustomerEntity customerEntity) {
 		this.customerEntity = customerEntity;
+	}
+
+	public Double getAvailableBalance() {
+		return availableBalance;
+	}
+
+	public void setAvailableBalance(Double availableBalance) {
+		this.availableBalance = availableBalance;
 	}
 
 }

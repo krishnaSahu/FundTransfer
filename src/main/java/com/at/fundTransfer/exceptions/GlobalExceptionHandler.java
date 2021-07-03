@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import io.jsonwebtoken.MalformedJwtException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -77,6 +79,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		body.put("message", "User not found");
 
 		return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(MalformedJwtException.class)
+	public ResponseEntity<Object> malformedJwtException(MalformedJwtException ex, WebRequest request) {
+
+		Map<String, Object> body = new LinkedHashMap<>();
+		body.put("timestamp", LocalDateTime.now());
+		body.put("message", "Token in not valid");
+
+		return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
 	}
 
 	@Override

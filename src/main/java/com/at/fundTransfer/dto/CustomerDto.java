@@ -1,6 +1,13 @@
 package com.at.fundTransfer.dto;
 
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class CustomerDto {
+
+	@JsonIgnore
+	private UUID customerId;
 
 	private String customerName;
 
@@ -50,6 +57,14 @@ public class CustomerDto {
 
 	public void setEmailId(String emailId) {
 		this.emailId = emailId;
+	}
+
+	public UUID getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(UUID customerId) {
+		this.customerId = customerId;
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.at.fundTransfer.config;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -9,14 +12,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.at.fundTransfer.dto.CustomerDto;
+import com.at.fundTransfer.entity.CustomerEntity;
+import com.at.fundTransfer.exceptions.UserNotFoundException;
 import com.at.fundTransfer.service.CustomerService;
 import com.at.fundTransfer.utils.JwtTokenUtil;
+import com.at.fundTransfer.utils.SessionUser;
 
 import io.jsonwebtoken.ExpiredJwtException;
 
@@ -57,11 +66,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		// Once we get the token validate it.
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-			UserDetails userDetails = customerService.loadUserByUsername(username);
+			CustomerDto customerInfo = customerService.getCustomerDetials(username);
+
+			UserDetails userDetails = buildUserDetails(customerInfo);
 
 			// if token is valid configure Spring Security to manually set
 			// authentication
 			if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+
+				SessionUser sessionUser = SessionUser.getInstance();
+				sessionUser.put("customerId", customerInfo.getCustomerId());
 
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
@@ -76,6 +90,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		}
 
 		chain.doFilter(request, response);
+	}
+
+	public UserDetails buildUserDetails(CustomerDto customerDto) {
+
+		Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+
+		UserDetails userDetails = new User(customerDto.getCustomerUserName(), customerDto.getPassword(),
+				grantedAuthorities);
+
+		return userDetails;
 	}
 
 }

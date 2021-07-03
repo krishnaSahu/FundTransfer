@@ -28,11 +28,11 @@ public class CustomerController {
 	}
 
 	@GetMapping("/customer")
-	public ResponseEntity<Object> getCustomerDetails(@RequestParam String userName) {
+	public ResponseEntity<CustomerDto> getCustomerDetails(@RequestParam String userName) {
 
 		CustomerDto customerDto = customerService.getCustomerDetials(userName);
 
-		return CommonResponseUtil.getSuccessResponse("customerDetails", customerDto);
+		return ResponseEntity.ok(customerDto);
 
 	}
 }

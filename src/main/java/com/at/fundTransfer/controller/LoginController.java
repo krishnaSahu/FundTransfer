@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.at.fundTransfer.dao.JwtRequestDto;
+import com.at.fundTransfer.dto.JwtRequestDto;
 import com.at.fundTransfer.dto.JwtResponseDto;
 import com.at.fundTransfer.service.CustomerService;
-import com.at.fundTransfer.utils.CommonResponseUtil;
 import com.at.fundTransfer.utils.JwtTokenUtil;
 
 @RestController

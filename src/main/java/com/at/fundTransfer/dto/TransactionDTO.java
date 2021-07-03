@@ -1,7 +1,5 @@
 package com.at.fundTransfer.dto;
 
-import java.util.Date;
-
 /**
  * @author Krishna Sahu
  *
