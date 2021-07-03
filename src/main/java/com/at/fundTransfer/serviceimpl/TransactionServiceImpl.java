@@ -18,7 +18,6 @@ import com.at.fundTransfer.dto.TransactionRequestDTO;
 import com.at.fundTransfer.entity.AccounEntity;
 import com.at.fundTransfer.entity.TransactionEntity;
 import com.at.fundTransfer.exceptions.InvalidAmountException;
-import com.at.fundTransfer.exceptions.UserNotAuthorizedException;
 import com.at.fundTransfer.service.TransactionService;
 import com.at.fundTransfer.utils.CommonResponseUtil;
 
@@ -38,31 +37,27 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	@Transactional
 	public TransactionEntity saveTransaction(TransactionRequestDTO newTransaction) {
+
+		if (newTransaction.getAmount().compareTo(0.0) <= 0) {
+			throw new InvalidAmountException(newTransaction.getAmount());
+		}
+
 		TransactionEntity transactionData = null;
 
 		Optional<AccounEntity> accounEntityOptional;
 		AccounEntity accountEntity;
 
-		try {
+		if (validateTransactionDTO(newTransaction)) {
 
-			if (validateTransactionDTO(newTransaction)) {
+			transactionData = transactionRepo.save(getTransactionObject(newTransaction));
 
-				transactionData = transactionRepo.save(getTransactionObject(newTransaction));
+			accounEntityOptional = Optional.of(accountRepo.findByAccountNumber(newTransaction.getFromAccountId()));
+			accountEntity = accounEntityOptional.get();
+			accountEntity.setAvailableBalance(transactionData.getCurrBalance());
 
-				accounEntityOptional = Optional.of(accountRepo.findByAccountNumber(newTransaction.getFromAccountId()));
-				accountEntity = accounEntityOptional.get();
-				accountEntity.setAvailableBalance(transactionData.getCurrBalance());
-
-				accountRepo.save(accountEntity);
-			}
-
-		} catch (UserNotAuthorizedException ue) {
-			logger.warn("User is not found for :" + newTransaction.getToken() + ue.getCause());
-			throw new UserNotAuthorizedException();
-		} catch (InvalidAmountException ie) {
-			logger.warn("Invalid amount" + newTransaction.getAmount() + ie.getCause());
-			throw new InvalidAmountException(newTransaction.getAmount());
+			accountRepo.save(accountEntity);
 		}
+
 		return transactionData;
 	}
 
@@ -95,16 +90,16 @@ public class TransactionServiceImpl implements TransactionService {
 	private boolean validateTransactionDTO(TransactionRequestDTO newTransaction) {
 		boolean isValid = false;
 
-		if (accountsAreValid(newTransaction.getFromAccountId(), newTransaction.getToAccountId())) {
+		if (accountsAreValid(newTransaction.getFromAccountId())) {
 
 			if (newTransaction != null && newTransaction.getFromAccountId() != null
 					&& newTransaction.getToAccountId() != null && newTransaction.getAmount() != null) {
 
-				if (newTransaction.getTransactioType().equals("debit")
+				if (newTransaction.getTransactioType().equals("D")
 						&& getAvailableBalance(newTransaction.getFromAccountId()) > newTransaction.getAmount()) {
 					isValid = true;
 
-				} else if (newTransaction.getTransactioType().equals("credit")) {
+				} else if (newTransaction.getTransactioType().equals("C")) {
 
 					if (newTransaction.getAmount() > 0) {
 						isValid = true;
@@ -115,11 +110,10 @@ public class TransactionServiceImpl implements TransactionService {
 		return isValid;
 	}
 
-	private boolean accountsAreValid(String fromAcc, String toAcc) {
+	private boolean accountsAreValid(String fromAcc) {
 		boolean areActive = false;
 
-		if ((accountRepo.findByAccountNumber(fromAcc)).getActive()
-				&& (accountRepo.findByAccountNumber(fromAcc)).getActive()) {
+		if (accountRepo.findByAccountNumber(fromAcc).getActive()) {
 
 			areActive = true;
 		}
