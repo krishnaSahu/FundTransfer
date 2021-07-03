@@ -54,9 +54,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("timestamp", LocalDateTime.now());
-		body.put("message", "Insufficient Balance");
+		body.put("message", "Invalid Token Id");
 
-		return new ResponseEntity<>(body, HttpStatus.PAYMENT_REQUIRED);
+		return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(UserNotAuthorizedException.class)
@@ -76,7 +76,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		body.put("timestamp", LocalDateTime.now());
 		body.put("message", "User not found");
 
-		return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
 	}
 
 	@Override
